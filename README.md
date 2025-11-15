@@ -84,7 +84,7 @@ Create a new PostgreSQL database. You can name it `trb2_db` or any other name yo
 
 Open your browser and navigate to `http://localhost:3000` to access the application.
 
-## Seed Data (Optional)
+## Seed Data
 
 This project does not include a seed script. You will need to manually insert an `admin` user into the `User` table in your database to be able to log in and create other users.
 
@@ -95,3 +95,11 @@ INSERT INTO "User" (email, password, role, "isActive", "createdAt", "updatedAt")
 VALUES ('admin@example.com', 'hashed_password_here', 'admin', TRUE, NOW(), NOW());
 ```
 You can generate a bcrypt hash using a tool or a simple Node.js script.
+https://bcrypt-generator.com/
+
+SQL example to associate a professional with a user
+
+```sql
+INSERT INTO "Profesional" (id, "userId", "firstName", "lastName", phone, address, "isActive")
+VALUES (1, 1, 'Admin', 'User', '', '', true);
+```
