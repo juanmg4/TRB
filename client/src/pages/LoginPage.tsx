@@ -130,10 +130,14 @@ const LoginPage: React.FC = () => {
               mb: 2,
               backgroundColor: '#FFA726', // Softer orange (peach-like)
               color: '#FFFFFF', // White text
-              borderRadius: '4px', // Slightly rounded corners
-              border: '1px solid rgba(255, 255, 255, 0.5)', // Very thin, light outer border
+              borderRadius: '8px', // More rounded corners for modern look
+              boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)', // Subtle shadow for depth
+              transition: 'background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out', // Smooth transitions
+              height: '50px', // Make the button a bit thicker
+              fontWeight: 'bold', // Make the text bold
               '&:hover': {
                 backgroundColor: '#F7931E', // Darker orange on hover
+                boxShadow: '0px 6px 15px rgba(0, 0, 0, 0.2)', // Slightly more pronounced shadow on hover
               },
             }}
           >
