@@ -48,10 +48,8 @@ const MainLayout: React.FC = () => {
   };
 
   const drawer = (
-    <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
-      <Typography variant="h6" sx={{ my: 2 }}>
-        TRB App
-      </Typography>
+    <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center', p: 2 }}>
+      <img src="/intersoft_logo.png" alt="Intersoft Logo" style={{ maxWidth: '100%', height: 'auto', maxHeight: '60px' }} />
       <List>
         {getNavLinks().map((link) => (
           <ListItem key={link.text} disablePadding>
@@ -74,7 +72,6 @@ const MainLayout: React.FC = () => {
         }}
       >
         <Toolbar>
-
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -85,7 +82,7 @@ const MainLayout: React.FC = () => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-            TRB - {window.location.pathname.substring(1).split('/')[0] || 'Dashboard'}
+            {window.location.pathname.substring(1).split('/')[0] || 'Dashboard'}
           </Typography>
           <Typography variant="body1" sx={{ mr: 2 }}>
             Bienvenido, {user?.email} ({user?.role})

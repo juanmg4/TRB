@@ -1,0 +1,34 @@
+The application is a full-stack web application with a clear separation between the frontend and backend.
+
+**Frontend (Client):**
+*   **Technology Stack:** Built with React and TypeScript.
+*   **UI/UX:** Utilizes Material-UI (`@mui/material`) for a consistent and modern user interface.
+*   **Communication:** Uses Axios for making HTTP requests to the backend API.
+*   **Routing:** Manages navigation within the single-page application using React Router DOM.
+*   **State Management:** Employs React Context API (e.g., `AuthContext.tsx`) for global state, particularly for authentication.
+*   **Structure:** Follows a modular architecture with dedicated directories for `api` (backend service integrations), `components` (reusable UI elements), `context` (global state providers), `pages` (application views), `types` (TypeScript interfaces for data models), and `utils` (helper functions). `App.tsx` and `index.tsx` serve as the main entry points.
+
+**Backend (Server):**
+*   **Technology Stack:** Developed using Node.js with the Express.js framework and TypeScript.
+*   **Database & ORM:** Interacts with a PostgreSQL database via Prisma ORM, which provides a type-safe and efficient way to manage database operations.
+*   **Authentication:** Implements token-based authentication using JSON Web Tokens (`jsonwebtoken`) and `bcryptjs` for secure password hashing. Refresh tokens are managed via the `RefreshToken` model.
+*   **Authorization:** Features Role-Based Access Control (RBAC) with roles defined in a Prisma `Role` enum (`user`, `supervisor`, `admin`), enforced by `rbacMiddleware.ts`.
+*   **Validation:** Uses Zod for robust schema validation of incoming request data.
+*   **Configuration:** Manages environment variables using `dotenv`.
+*   **Structure:** Organized in a feature-based or domain-driven manner. Each core entity (e.g., `assignment`, `auth`, `client`, `hour`, `profesional`, `project`, `task`, `user`) has its own directory containing `controller.ts` (business logic) and `routes.ts` (API endpoint definitions). Common functionalities are grouped in `middleware` (e.g., `authMiddleware.ts` for JWT validation) and `utils` (e.g., `db.ts` for Prisma client initialization). `index.ts` is the server's main entry point.
+
+**Database Schema (PostgreSQL via Prisma):**
+The `prisma/schema.prisma` file defines a comprehensive schema for managing projects, clients, professionals, and time tracking:
+*   **User:** Core user accounts with roles, email, and password.
+*   **Profesional:** Extends user information for professionals, linking to hours and project assignments.
+*   **Client:** Stores client details, associated with projects and hours.
+*   **Project:** Defines projects, linked to clients, tasks, hours, and assigned professionals.
+*   **Task:** Represents specific tasks within a project, linked to projects and hours.
+*   **Hour:** Records time entries by professionals for specific clients, projects, and tasks.
+*   **RefreshToken:** Manages refresh tokens for user sessions.
+*   **ProjectProfessional:** A join table for many-to-many assignments of professionals to projects (and optionally tasks within projects).
+
+**Overall Purpose:**
+The application appears to be a project and time management system, likely for a service-oriented business. It allows for user authentication and authorization based on roles, management of clients, projects, tasks, professionals, and detailed tracking of hours worked. The clear separation of concerns and use of modern technologies suggest a well-structured and maintainable codebase.
+
+This is a work-hours tracking application. The system must allow employees to log their worked hours, supervisors to manage clients, projects, tasks, and assignments, and administrators to control user accounts. Users log their hours on a project task for a client.
