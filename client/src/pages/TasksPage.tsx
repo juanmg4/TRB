@@ -18,9 +18,15 @@ import {
   DialogContent,
   DialogActions,
   TextField,
+  FormControl, // Added
+  InputLabel, // Added
+  Select, // Added
+  MenuItem, // Added
+  SelectChangeEvent, // Added
 } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import taskService from '../api/task.service';
+import projectService from '../api/project.service'; // Import project service
 
 interface Task {
   id: number;
@@ -29,9 +35,15 @@ interface Task {
   description: string | null;
 }
 
+interface Project { // Define Project interface
+  id: number;
+  name: string;
+}
+
 const TasksPage: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [projectsList, setProjectsList] = useState<Project[]>([]); // New state for projects
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [openDialog, setOpenDialog] = useState(false);
@@ -41,20 +53,54 @@ const TasksPage: React.FC = () => {
   // Form states
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [selectedProjectId, setSelectedProjectId] = useState<number | ''>(''); // New state for selected project in form
 
   useEffect(() => {
+    fetchProjectsList(); // Fetch projects for the dropdown
     if (projectId) {
-      fetchTasks(parseInt(projectId));
+      const parsedProjectId = parseInt(projectId);
+      if (isNaN(parsedProjectId)) {
+        setError('ID de proyecto inválido en la URL.');
+        setLoading(false);
+      } else {
+        fetchTasks(parsedProjectId);
+      }
+    } else {
+      fetchAllTasks(); // Fetch all tasks if no projectId is provided
     }
   }, [projectId]);
+
+  const fetchProjectsList = async () => {
+    try {
+      const response = await projectService.getProjects(1, 9999, 'name:asc'); // Fetch all projects
+      setProjectsList(response.data);
+    } catch (err: any) {
+      console.error('Error al cargar la lista de proyectos:', err);
+      // Optionally set an error state for projects list
+    }
+  };
 
   const fetchTasks = async (projId: number) => {
     try {
       setLoading(true);
+      setError(null); // Clear previous errors
       const data = await taskService.getTasksByProjectId(projId);
       setTasks(data);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Error al cargar tareas.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchAllTasks = async () => {
+    try {
+      setLoading(true);
+      setError(null); // Clear previous errors
+      const data = await taskService.getAllTasks();
+      setTasks(data);
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Error al cargar todas las tareas.');
     } finally {
       setLoading(false);
     }
@@ -65,6 +111,7 @@ const TasksPage: React.FC = () => {
     setCurrentTask(null);
     setName('');
     setDescription('');
+    setSelectedProjectId(projectId && !isNaN(parseInt(projectId)) ? parseInt(projectId) : ''); // Set default project if in project-specific view
     setOpenDialog(true);
   };
 
@@ -73,6 +120,7 @@ const TasksPage: React.FC = () => {
     setCurrentTask(task);
     setName(task.name);
     setDescription(task.description || '');
+    setSelectedProjectId(task.projectId); // Set selected project for editing
     setOpenDialog(true);
   };
 
@@ -85,13 +133,13 @@ const TasksPage: React.FC = () => {
     event.preventDefault();
     setError(null);
 
-    if (!projectId) {
-      setError('ID de proyecto no encontrado.');
+    if (!selectedProjectId) {
+      setError('Debe seleccionar un proyecto para la tarea.');
       return;
     }
 
     const taskData = {
-      projectId: parseInt(projectId),
+      projectId: selectedProjectId as number, // Use selectedProjectId from form
       name,
       description: description || null,
     };
@@ -100,10 +148,14 @@ const TasksPage: React.FC = () => {
       if (isEditMode && currentTask) {
         await taskService.updateTask(currentTask.id, taskData);
       } else {
-        await taskService.createTask(parseInt(projectId), taskData);
+        await taskService.createTask(selectedProjectId as number, taskData); // Use selectedProjectId for creation
       }
       handleCloseDialog();
-      fetchTasks(parseInt(projectId));
+      if (projectId) { // Refresh based on current view
+        fetchTasks(parseInt(projectId));
+      } else {
+        fetchAllTasks();
+      }
     } catch (err: any) {
       setError(err.response?.data?.message || 'Error al guardar tarea.');
     }
@@ -115,6 +167,8 @@ const TasksPage: React.FC = () => {
         await taskService.deleteTask(id); // Hard delete
         if (projectId) {
           fetchTasks(parseInt(projectId));
+        } else {
+          fetchAllTasks(); // Refresh all tasks if no projectId is present
         }
       } catch (err: any) {
         setError(err.response?.data?.message || 'Error al eliminar tarea.');
@@ -133,9 +187,14 @@ const TasksPage: React.FC = () => {
   return (
     <Container maxWidth="lg" sx={{ mt: 4 }}>
       <Typography variant="h4" component="h1" gutterBottom>
-        Tareas del Proyecto {projectId}
+        {error ? 'Error' : (projectId && !isNaN(parseInt(projectId)) ? `Tareas del Proyecto ${projectId}` : 'Todas las Tareas')}
       </Typography>
-      <Button variant="contained" color="primary" onClick={handleOpenCreateDialog} sx={{ mb: 2 }}>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleOpenCreateDialog}
+        sx={{ mb: 2 }}
+      >
         Crear Nueva Tarea
       </Button>
 
@@ -181,6 +240,25 @@ const TasksPage: React.FC = () => {
         <DialogTitle>{isEditMode ? 'Editar Tarea' : 'Crear Nueva Tarea'}</DialogTitle>
         <DialogContent>
           {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+          <FormControl fullWidth margin="dense" variant="standard" required>
+            <InputLabel id="project-label">Proyecto</InputLabel>
+            <Select
+              labelId="project-label"
+              id="selectedProjectId"
+              value={selectedProjectId}
+              label="Proyecto"
+              onChange={(e: SelectChangeEvent<number>) => setSelectedProjectId(e.target.value as number)}
+            >
+              <MenuItem value="">
+                <em>Seleccione un proyecto</em>
+              </MenuItem>
+              {projectsList.map((proj) => (
+                <MenuItem key={proj.id} value={proj.id}>
+                  {proj.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           <TextField
             autoFocus
             margin="dense"

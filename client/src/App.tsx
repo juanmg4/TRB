@@ -53,6 +53,7 @@ function App() {
               {/* ProjectsPage requires admin or supervisor role */}
               <Route path="/proyectos" element={<ProjectsPage />} />
               {/* TasksPage requires admin or supervisor role */}
+              <Route path="/tareas" element={<TasksPage />} /> {/* New route for all tasks */}
               <Route path="/proyectos/:projectId/tareas" element={<TasksPage />} />
               {/* ProfilePage is accessible by all authenticated roles */}
               <Route path="/perfil" element={<ProfilePage />} />

@@ -27,6 +27,7 @@ import {
   TablePagination, // New import
   TableSortLabel, // New import
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import projectService from '../api/project.service';
 import clientService from '../api/client.service'; // To fetch clients for dropdown
 
@@ -47,6 +48,7 @@ interface Project {
 type Order = 'asc' | 'desc';
 
 const ProjectsPage: React.FC = () => {
+  const navigate = useNavigate(); // Initialize useNavigate
   const [projects, setProjects] = useState<Project[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
@@ -170,6 +172,10 @@ const ProjectsPage: React.FC = () => {
     }
   };
 
+  const handleViewTasks = (projectId: number) => {
+    navigate(`/proyectos/${projectId}/tareas`);
+  };
+
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
@@ -246,6 +252,14 @@ const ProjectsPage: React.FC = () => {
                     disabled={!project.isActive}
                   >
                     Desactivar
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    sx={{ ml: 1 }}
+                    onClick={() => handleViewTasks(project.id)}
+                  >
+                    Ver Tareas
                   </Button>
                 </TableCell>
               </TableRow>

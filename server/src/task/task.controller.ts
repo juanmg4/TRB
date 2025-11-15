@@ -91,3 +91,13 @@ export const deleteTask = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Error interno del servidor al eliminar tarea.' });
   }
 };
+
+export const getAllTasks = async (req: Request, res: Response) => {
+  try {
+    const tasks = await prisma.task.findMany();
+    res.status(200).json(tasks);
+  } catch (error) {
+    console.error('Error al obtener todas las tareas:', error);
+    res.status(500).json({ message: 'Error interno del servidor.' });
+  }
+};

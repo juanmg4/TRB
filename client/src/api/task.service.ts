@@ -43,12 +43,21 @@ const deleteTask = async (id: number) => { // Hard delete
   return response.data;
 };
 
+const getAllTasks = async () => {
+  const token = getAccessToken();
+  const response = await axios.get(`http://localhost:3001/api/tareas`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
 const taskService = {
   getTasksByProjectId,
   getTaskById,
   createTask,
   updateTask,
   deleteTask,
+  getAllTasks, // Add new method
 };
 
 export default taskService;

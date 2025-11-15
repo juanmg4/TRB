@@ -20,12 +20,12 @@ app.use(cors({
 }));
 app.use(express.json());
 
+app.use('/api', taskRoutes); // Mount taskRoutes directly under /api
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/profesionales', profesionalRoutes);
 app.use('/api/clientes', clientRoutes);
 app.use('/api/proyectos', projectRoutes);
-app.use('/api/proyectos', taskRoutes); // Task routes are nested under projects
 app.use('/api/proyectos', assignmentRoutes); // Assignment routes are nested under projects
 app.use('/api/horas', hourRoutes);
 

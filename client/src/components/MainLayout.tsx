@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate, Outlet } from 'react-router-dom';
+import { useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { Role } from '../types/types';
 
 const drawerWidth = 240;
@@ -22,6 +22,7 @@ const drawerWidth = 240;
 const MainLayout: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation(); // Get current location
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleLogout = () => {
@@ -39,13 +40,44 @@ const MainLayout: React.FC = () => {
       { text: 'Mis Horas', path: '/horas', roles: [Role.user, Role.supervisor, Role.admin] },
       { text: 'Clientes', path: '/clientes', roles: [Role.supervisor, Role.admin] },
       { text: 'Proyectos', path: '/proyectos', roles: [Role.supervisor, Role.admin] },
-      { text: 'Tareas', path: '/proyectos/1/tareas', roles: [Role.supervisor, Role.admin] }, // Placeholder projectId
+      { text: 'Tareas', path: '/tareas', roles: [Role.supervisor, Role.admin] }, // Restored Tareas link
       { text: 'Usuarios', path: '/usuarios', roles: [Role.admin] },
       { text: 'Mi Perfil', path: '/perfil', roles: [Role.user, Role.supervisor, Role.admin] },
     ];
 
     return links.filter(link => user && link.roles.includes(user.role));
   };
+
+  const getPageTitle = (pathname: string): string => {
+    const navLinks = getNavLinks();
+
+    // Sort navLinks by path length in descending order to prioritize more specific routes
+    const sortedNavLinks = [...navLinks].sort((a, b) => {
+      // Handle dynamic segments for sorting as well, so /proyectos/:id/tareas is considered longer than /proyectos
+      const aPathSegments = a.path.split('/').filter(segment => segment !== '');
+      const bPathSegments = b.path.split('/').filter(segment => segment !== '');
+      return bPathSegments.length - aPathSegments.length;
+    });
+
+    // Handle root path
+    if (pathname === '/') {
+      return 'Dashboard';
+    }
+
+    for (const link of sortedNavLinks) {
+      // Convert link.path to a regex pattern to handle dynamic segments like :projectId
+      const pattern = new RegExp(`^${link.path.replace(/:[a-zA-Z0-9_]+/g, '[^/]+')}$`);
+      if (pattern.test(pathname)) {
+        return link.text;
+      }
+    }
+
+    // Fallback if no specific match found
+    const firstSegment = pathname.substring(1).split('/')[0];
+    return firstSegment ? (firstSegment.charAt(0).toUpperCase() + firstSegment.slice(1)) : 'Dashboard';
+  };
+
+  const currentTitle = getPageTitle(location.pathname);
 
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center', p: 2 }}>
@@ -82,7 +114,7 @@ const MainLayout: React.FC = () => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-            {window.location.pathname.substring(1).split('/')[0] || 'Dashboard'}
+            {currentTitle}
           </Typography>
           <Typography variant="body1" sx={{ mr: 2 }}>
             Bienvenido, {user?.email} ({user?.role})
