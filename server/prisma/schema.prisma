@@ -1,0 +1,118 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  user
+  supervisor
+  admin
+}
+
+model User {
+  id            Int           @id @default(autoincrement())
+  email         String        @unique
+  password      String
+  role          Role          @default(user)
+  isActive      Boolean       @default(true)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  Profesional   Profesional?
+  RefreshTokens RefreshToken[]
+}
+
+model Profesional {
+  id                 Int                  @id @default(autoincrement())
+  userId             Int                  @unique
+  user               User                 @relation(fields: [userId], references: [id])
+  firstName          String
+  lastName           String
+  phone              String?
+  address            String?
+  isActive           Boolean              @default(true)
+  Hours              Hour[]
+  ProjectProfessional ProjectProfessional[]
+}
+
+model Client {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  address   String?
+  phone     String?
+  email     String?
+  isActive  Boolean   @default(true)
+  Projects  Project[]
+  Hours     Hour[]
+}
+
+model Project {
+  id                  Int                   @id @default(autoincrement())
+  clientId            Int
+  client              Client                @relation(fields: [clientId], references: [id])
+  name                String
+  description         String?
+  isActive            Boolean               @default(true)
+  Tasks               Task[]
+  Hours               Hour[]
+  ProjectProfessional ProjectProfessional[]
+}
+
+model Task {
+  id          Int     @id @default(autoincrement())
+  projectId   Int
+  project     Project @relation(fields: [projectId], references: [id])
+  name        String
+  description String?
+  Hours       Hour[]
+  ProjectProfessional ProjectProfessional[]
+}
+
+model Hour {
+  id               Int       @id @default(autoincrement())
+  professionalId   Int
+  professional     Profesional @relation(fields: [professionalId], references: [id])
+  date             DateTime  @db.Date
+  hours            Int
+  minutes          Int
+  clientId         Int?
+  client           Client?   @relation(fields: [clientId], references: [id])
+  projectId        Int?
+  project          Project?  @relation(fields: [projectId], references: [id])
+  taskId           Int?
+  task             Task?     @relation(fields: [taskId], references: [id])
+  description      String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
+
+model RefreshToken {
+  id                Int       @id @default(autoincrement())
+  token             String    @unique
+  userId            Int
+  user              User      @relation(fields: [userId], references: [id])
+  expiresAt         DateTime
+  replacedByTokenId Int?      @unique
+  replacedBy        RefreshToken? @relation("RefreshTokenReplacement", fields: [replacedByTokenId], references: [id])
+  replaces          RefreshToken? @relation("RefreshTokenReplacement")
+  isRevoked         Boolean   @default(false)
+  createdAt         DateTime  @default(now())
+}
+
+model ProjectProfessional {
+  id             Int         @id @default(autoincrement())
+  projectId      Int
+  project        Project     @relation(fields: [projectId], references: [id])
+  professionalId Int
+  professional   Profesional @relation(fields: [professionalId], references: [id])
+  taskId         Int?        // Optional: to assign a professional to a specific task within a project
+  task           Task?       @relation(fields: [taskId], references: [id])
+
+  @@unique([projectId, professionalId, taskId]) // A professional can be assigned to a project/task combination only once
+}
