@@ -51,36 +51,8 @@ const LoginPage: React.FC = () => {
         }}
       >
         {/* Logo */}
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-          <Box
-            sx={{
-              width: 24,
-              height: 24,
-              backgroundColor: 'red', // Placeholder for geometric icon part 1
-              clipPath: 'polygon(0 0, 100% 0, 0 100%)', // Example: triangle
-              mr: 0.5,
-            }}
-          />
-          <Box
-            sx={{
-              width: 24,
-              height: 24,
-              backgroundColor: 'darkblue', // Placeholder for geometric icon part 2
-              clipPath: 'polygon(100% 0, 100% 100%, 0 100%)', // Example: triangle
-              mr: 1,
-            }}
-          />
-          <Typography
-            variant="h4"
-            component="div"
-            sx={{
-              fontWeight: 'bold',
-              color: '#333333',
-              letterSpacing: '2px',
-            }}
-          >
-            Intersoft
-          </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
+          <img src="/intersoft_logo.png" alt="Intersoft Logo" style={{ maxWidth: '200px', height: 'auto' }} />
         </Box>
 
         <Typography
