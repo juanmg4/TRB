@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom'; // Import Navigate
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { AuthProvider } from './context/AuthContext';
@@ -45,7 +45,8 @@ function App() {
           {/* Protected routes */}
           <Route element={<ProtectedRoute />}>
             <Route element={<MainLayout />}> {/* MainLayout wraps all authenticated content */}
-              <Route path="/" element={<DashboardPage />} />
+              <Route path="/" element={<Navigate to="/Dashboard" replace />} /> {/* Redirect root to /Dashboard */}
+              <Route path="/Dashboard" element={<DashboardPage />} /> {/* New route for Dashboard */}
               {/* UsersPage requires admin role */}
               <Route path="/usuarios" element={<UsersPage />} />
               {/* ClientsPage requires admin or supervisor role */}

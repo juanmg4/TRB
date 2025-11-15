@@ -12,7 +12,7 @@ const LoginPage: React.FC = () => {
 
   React.useEffect(() => {
     if (isAuthenticated) {
-      navigate('/');
+      navigate('/Dashboard'); // Redirect to /Dashboard after login
     }
   }, [isAuthenticated, navigate]);
 
