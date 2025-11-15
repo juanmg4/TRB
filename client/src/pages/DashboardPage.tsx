@@ -145,7 +145,7 @@ const DashboardPage: React.FC = () => {
                 />
               </Grid>
               <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <Button variant="contained" onClick={() => navigate('/hours')}>Cargar horas faltantes</Button>
+                <Button variant="contained" onClick={() => navigate('/horas')}>Cargar horas faltantes</Button>
               </Grid>
             </Grid>
           </Paper>
