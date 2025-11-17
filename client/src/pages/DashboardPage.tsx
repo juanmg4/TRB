@@ -18,6 +18,7 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
+import { darken } from '@mui/material/styles';
 import {
   AccessTime,
   Work,
@@ -53,19 +54,43 @@ interface StatCardProps {
 }
 
 const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color }) => (
-  <Card sx={{ backgroundColor: color }}>
-    <CardContent>
-      <Grid container spacing={2} alignItems="center">
-        <Grid item>{icon}</Grid>
-        <Grid item xs>
-          <Typography sx={{ color: 'text.secondary' }} gutterBottom>
-            {title}
-          </Typography>
-          <Typography variant="h4">{value}</Typography>
-        </Grid>
-      </Grid>
-    </CardContent>
-  </Card>
+    <Card sx={{
+        backgroundColor: color,
+        color: '#fff',
+        borderRadius: '12px',
+        boxShadow: '0 8px 16px 0 rgba(0,0,0,0.1)',
+        transition: '0.3s',
+        '&:hover': {
+            boxShadow: '0 12px 24px 0 rgba(0,0,0,0.2)',
+        }
+    }}>
+        <CardContent sx={{ p: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Box sx={{
+                    p: 1.5,
+                    mr: 2,
+                    backgroundColor: darken(color, 0.2),
+                    borderRadius: '8px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    '& .MuiSvgIcon-root': {
+                        fontSize: '2rem'
+                    }
+                }}>
+                    {icon}
+                </Box>
+                <Box>
+                    <Typography sx={{ color: 'rgba(255, 255, 255, 0.7)', fontWeight: 500 }} gutterBottom>
+                        {title}
+                    </Typography>
+                    <Typography variant="h5" component="div" sx={{ fontWeight: 'bold' }}>
+                        {value}
+                    </Typography>
+                </Box>
+            </Box>
+        </CardContent>
+    </Card>
 );
 
 const DashboardPage: React.FC = () => {
@@ -125,7 +150,7 @@ const DashboardPage: React.FC = () => {
                   title="TOTAL A CARGAR"
                   value={misHoras.totalACargar}
                   icon={<AccessTime fontSize="large" />}
-                  color="#f0e68c"
+                  color="#42A5F5"
                 />
               </Grid>
               <Grid item xs={12} md={4}>
@@ -133,7 +158,7 @@ const DashboardPage: React.FC = () => {
                   title="CARGADAS"
                   value={misHoras.cargadas}
                   icon={<AccessTime fontSize="large" />}
-                  color="#ffd700"
+                  color="#66BB6A"
                 />
               </Grid>
               <Grid item xs={12} md={4}>
@@ -141,7 +166,7 @@ const DashboardPage: React.FC = () => {
                   title="FALTA CARGAR"
                   value={misHoras.faltaCargar}
                   icon={<AccessTime fontSize="large" />}
-                  color="#ffA500"
+                  color="#FFA726"
                 />
               </Grid>
               <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -160,7 +185,7 @@ const DashboardPage: React.FC = () => {
                   title="PROYECTOS"
                   value={proyectos.total}
                   icon={<Work fontSize="large" />}
-                  color="#00bcd4"
+                  color="#AB47BC"
                 />
               </Grid>
               <Grid item xs={12} md={4}>
@@ -168,7 +193,7 @@ const DashboardPage: React.FC = () => {
                   title="ACTIVOS"
                   value={proyectos.activos}
                   icon={<CheckCircleOutline fontSize="large" />}
-                  color="#4caf50"
+                  color="#26A69A"
                 />
               </Grid>
               <Grid item xs={12} md={4}>
@@ -176,7 +201,7 @@ const DashboardPage: React.FC = () => {
                   title="INACTIVOS"
                   value={proyectos.inactivos}
                   icon={<HighlightOff fontSize="large" />}
-                  color="#9e9e9e"
+                  color="#EF5350"
                 />
               </Grid>
             </Grid>
